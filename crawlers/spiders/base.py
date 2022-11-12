@@ -23,7 +23,7 @@ class BaseSpider(scrapy.Spider):
 
 		def atuacao_by_column(contexto, column_text):
 			value = Selector(text=contexto).xpath(f'//dt[contains(text(), "{column_text}")]/following-sibling::dd/text()').get()
-			return value.replace("\n", "").strip()
+			return value.replace("\n", "").strip().split(" ")[0]
 		
 		deputy['presença_plenario'] = atuacao_by_column(atuacao_plenario, "Presenças")
 		deputy['ausencia_justificada_plenario'] = atuacao_by_column(atuacao_plenario, "Ausências justificadas")
@@ -70,6 +70,8 @@ class BaseSpider(scrapy.Spider):
 		deputy['salario_bruto'] = salario_to_float(response.xpath(f'//h3[text()="Salário mensal bruto "]/following-sibling::a[@class="beneficio__info"]/text()').get())
 
 		deputy['quant_viagem'] = response.xpath('//div[@class="beneficio beneficio__viagens"]/span/text()').get()
+		if (deputy['quant_viagem'] is None):
+			deputy['quant_viagem'] = response.xpath('//div[@class="beneficio beneficio__viagens"]/a[@class="beneficio__info"]/text()').get()
 
 		deputy['avatar'] = response.xpath('//img[@class="foto-deputado__imagem"]/@src').get()
 

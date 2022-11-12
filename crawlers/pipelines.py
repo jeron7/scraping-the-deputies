@@ -1,13 +1,20 @@
-# Define your item pipelines here
-#
-# Don't forget to add your pipeline to the ITEM_PIPELINES setting
-# See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-
-
-# useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
+import csv
 
+class CsvWriterPipeline:
+	def open_spider(self, spider):
+		self.file_name = 'data/deputies.csv';
+		self.file = open(self.file_name, 'a+')
+		self.csvwriter = csv.writer(self.file)
+		self.has_header = False
 
-class CrawlersPipeline:
-    def process_item(self, item, spider):
-        return item
+	def close_spider(self, spider):
+		self.file.close()
+
+	def process_item(self, item, spider):
+		if (not self.has_header):
+			header_keys = list(ItemAdapter(item).asdict().keys())
+			self.csvwriter.writerow(header_keys)
+			self.has_header = True
+		self.csvwriter.writerow([item[key] for key in item.keys()])
+		return item

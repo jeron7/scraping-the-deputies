@@ -52,7 +52,7 @@ class BaseSpider(scrapy.Spider):
 		meses = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']
 
 		def gastos_mensais(verba, mes):
-			gastos_mensais = Selector(text=verba_par).xpath('//div/p[contains(text(), "Gasto mensal")]/following-sibling::table/tbody').get()
+			gastos_mensais = Selector(text=verba).xpath('//div/p[contains(text(), "Gasto mensal")]/following-sibling::table/tbody').get()
 			return salario_to_float(Selector(text=gastos_mensais).xpath(f'//td[text()="{mes}"]/following-sibling::td/text()').get())
 
 		for mes in meses:
